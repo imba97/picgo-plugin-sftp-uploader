@@ -123,7 +123,12 @@ export = (ctx: picgo) => {
       })
       .catch(err => {
         ctx.log.error('SSH SCP 发生错误，请检查用户名、私钥和密码是否正确')
-        throw new Error(err)
+        ctx.log.error(err)
+        ctx.emit('notification', {
+          title: 'SSH SCP 错误',
+          body: '请检查用户名、私钥和密码是否正确',
+          text: ''
+        })
       })
 
     }
@@ -134,7 +139,7 @@ export = (ctx: picgo) => {
   const upload = (output: IImgInfo, localPath: string, userConfig: IScpLoaderUserConfig) : Promise<string> => {
 
     // 格式化路径
-    let resultPath = formatPath(output, userConfig)
+    let pathInfo = formatPath(output, userConfig)
 
     return new Promise(function (resolve, reject) {
 
@@ -158,12 +163,12 @@ export = (ctx: picgo) => {
       scp2.scp(localPath, {
         host: userConfig.host,
         port: userConfig.port,
-        path: `${resultPath.uploadPath}`,
+        path: `${pathInfo.uploadPath}`,
         ...loginInfo
       }, function(err) {
         if(err) reject(err)
         // 上传成功
-        resolve(resultPath.path)
+        resolve(pathInfo.path)
       })
     })
 

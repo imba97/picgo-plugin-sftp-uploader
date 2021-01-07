@@ -1,12 +1,12 @@
 {
   "name": "picgo-plugin-ssh-scp-uploader",
-  "version": "1.0.0",
-  "description": "ssh scp2 uploader",
+  "version": "1.0.1",
+  "description": "An uploader for uploadding via SSH SCP",
   "main": "dist/index.js",
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "",
+  "homepage": "https://github.com/imba97/picgo-plugin-ssh-scp-uploader",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p .",

@@ -14,7 +14,7 @@ SSH 地址 | 一般是服务器IP | 233.233.233.233
 用户名\|私钥 | 如果有私钥则填 用户名“竖线”私钥路径 | www
 密码/私钥密码 | 如果有私钥则填 私钥密码 | password
 
-最终返回的地址是 **域名地址** + **网站路径**
+最终返回的地址是 **域名地址** + **网址路径**
 
 ## 路径 Format
 
@@ -34,13 +34,13 @@ ext | 图片后缀名 | png
 
 ## 路径配置示例
 
-**网站路径**和**文件路径**的配置示例
+**网址路径**和**文件路径**的配置示例
 
 比如我服务器有这样一个路径：`/www/wwwroot/blog/uploads/`，图片在里面
 
 我的网站根目录是`/www/wwwroot/blog/`
 
-那么我可以把**网站路径**设置为`/uploads/{year}/{month}/{fullName}`
+那么我可以把**网址路径**设置为`/uploads/{year}/{month}/{fullName}`
 
 **文件路径**设置为`/www/wwwroot/blog/uploads/{year}/{month}/{fullName}`
 
@@ -78,7 +78,7 @@ ext | 图片后缀名 | png
    # 打开 passwd
    vim /etc/passwd
    # 找到这一行
-   www:x:1000:1000::/home/www:/bin/bash
-   # 改成
    www:x:1000:1000::/home/www:/sbin/nologin
+   # 改成
+   www:x:1000:1000::/home/www:/bin/bash
    ```
