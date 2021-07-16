@@ -4,15 +4,63 @@ PicGo SSH SCP 上传插件
 
 ## 配置
 
+配置分为“插件配置”和“配置文件配置”
+
+**插件配置**是在插件中配置
+
+**配置文件配置**是需要自行创建一个`json`文件进行配置
+
+### 插件配置
+
 名称 | 介绍 | 配置示例
 -|-|-
-域名地址 | 图片网站的域名 | https://imba97.cn
-网址路径 | 图片在网址中的路径 | /uploads/{year}/{month}/{fullName}
-文件路径 | 图片在服务器的真实路径 | /www/wwwroot/blog/uploads/{year}/{month}/{fullName}
-SSH 地址 | 一般是服务器IP | 233.233.233.233
-端口 | 略 | 22
-用户名\|私钥 | 如果有私钥则填 用户名“竖线”私钥路径 | www
-密码/私钥密码 | 如果有私钥则填 私钥密码 | password
+网站标识 | 多个FTP站的标识 | imba97
+配置文件 | 配置文件的路径或URL | C:/sshScpUploader.json
+
+**关于配置文件**
+
+可以是本地文件，如 `C:/sshScpUploader.json`
+
+也可以是网络文件，如 `https://imba97.cn/sshScpUploader.json`
+
+### 配置文件配置
+
+配置文件是一个`json`文件，你可以在里面配置多个服务器的信息
+
+例：
+
+```json
+{
+  "imba97": {
+    "url": "https://imba97.cn",
+    "path": "/uploads/{year}/{month}/{fullName}",
+    "uploadPath": "/www/imba97_cn/uploads/{year}/{month}/{fullName}",
+    "host": "1.2.3.4",
+    "port": 22,
+    "usernameAndPrivateKey": "root|C:/Users/imba97/.ssh/id_rsa",
+    "password": ""
+  },
+  "btools": {
+    "url": "https://btools.cc",
+    "path": "/uploads/{year}/{month}/{fullName}",
+    "uploadPath": "/www/btools_cc/uploads/{year}/{month}/{fullName}",
+    "host": "1.2.3.4",
+    "port": 22,
+    "usernameAndPrivateKey": "root",
+    "password": "password233"
+  }
+}
+```
+
+key | 名称 | 介绍 | 配置示例
+-|-|-|-
+url | 域名地址 | 图片网站的域名 | https://imba97.cn
+path | 网址路径 | 图片在网址中的路径 | /uploads/{year}/{month}/{fullName}
+uploadPath | 文件路径 | 图片在服务器的真实路径 | /www/wwwroot/blog/uploads/{year}/{month}/{fullName}
+host | SSH 地址 | 一般是服务器IP | 233.233.233.233
+port | 端口 | 略 | 22
+usernameAndPrivateKey | 用户名\|私钥 | 如果有私钥则填 用户名“竖线”私钥路径 | www
+password | 密码/私钥密码 | 如果有私钥则填 私钥密码 | password
 
 最终返回的地址是 **域名地址** + **网址路径**
 

@@ -1,6 +1,6 @@
 {
   "name": "picgo-plugin-ssh-scp-uploader",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "An uploader for uploadding via SSH SCP",
   "main": "dist/index.js",
   "publishConfig": {
