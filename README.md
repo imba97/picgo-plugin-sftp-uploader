@@ -38,29 +38,32 @@ PicGo SSH SCP 上传插件
     "host": "1.2.3.4",
     "port": 22,
     "usernameAndPrivateKey": "root|C:/Users/imba97/.ssh/id_rsa",
-    "password": ""
+    "password": "",
+    "fileUser": "www",
+    "dirMode": "0755"
   },
   "btools": {
     "url": "https://btools.cc",
     "path": "/uploads/{year}/{month}/{fullName}",
     "uploadPath": "/www/btools_cc/uploads/{year}/{month}/{fullName}",
     "host": "1.2.3.4",
-    "port": 22,
     "usernameAndPrivateKey": "root",
     "password": "password233"
   }
 }
 ```
 
-key | 名称 | 介绍 | 配置示例
--|-|-|-
-url | 域名地址 | 图片网站的域名 | https://imba97.cn
-path | 网址路径 | 图片在网址中的路径 | /uploads/{year}/{month}/{fullName}
-uploadPath | 文件路径 | 图片在服务器的真实路径 | /www/wwwroot/blog/uploads/{year}/{month}/{fullName}
-host | SSH 地址 | 一般是服务器IP | 233.233.233.233
-port | 端口 | 略 | 22
-usernameAndPrivateKey | 用户名\|私钥 | 如果有私钥则填 用户名“竖线”私钥路径 | www
-password | 密码/私钥密码 | 如果有私钥则填 私钥密码 | password
+key | 名称 | 介绍 | 配置示例 | 是否必填
+-|-|-|-|-
+url | 域名地址 | 图片网站的域名 | https://imba97.cn | 是
+path | 网址路径 | 图片在网址中的路径 | /uploads/{year}/{month}/{fullName} | 是
+uploadPath | 文件路径 | 图片在服务器的真实路径 | /www/wwwroot/blog/uploads/{year}/{month}/{fullName} | 是
+host | SSH 地址 | 一般是服务器IP | 233.233.233.233 | 是
+port | 端口 | 略 | 22 | 否
+usernameAndPrivateKey | 用户名\|私钥 | 如果有私钥则填 用户名“竖线”私钥路径 | www | 是
+password | 密码/私钥密码 | 如果有私钥则填 私钥密码 | password | 否
+fileUser | 文件所属用户 | 文件的所属用户:用户组，如果跟上传用户不同可填写，用户名和用户组名相同时，可不写“:” | www | 否
+dirMode | 文件夹 mode | 文件夹读写权限 | 0755 | 否
 
 最终返回的地址是 **域名地址** + **网址路径**
 

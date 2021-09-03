@@ -28,13 +28,13 @@ export const config = (ctx: picgo) => {
       type: 'input',
       default: userConfig.configFile,
       required: true,
-      message: 'C:/sshScpUploaderConfig.json',
+      message: 'D:/sshScpUploaderConfig.json',
       alias: '配置文件'
     }
   ]
 }
 
-export const getFtpConfig = (
+export const getPcigoConfig = (
   userConfig: IScpLoaderUserConfig
 ): Promise<{ [key: string]: IScpLoaderUserConfigItem }> => {
   return new Promise((resolve, reject) => {
@@ -83,6 +83,8 @@ export interface IScpLoaderUserConfigItem extends Object {
   port: number
   usernameAndPrivateKey: string
   password?: string
+  fileUser?: string
+  dirMode?: string
 }
 
 export interface IScpLoaderPathInfo {
