@@ -36,6 +36,8 @@ export default async function upload(
     // 连接
     await SSHClient.instance.init(config)
 
+    // ctx.log.info(JSON.stringify(pathInfo))
+
     // 上传
     await SSHClient.instance
       .upload(localPath, pathInfo.uploadPath)
@@ -54,6 +56,6 @@ export default async function upload(
     // 关闭
     SSHClient.instance.close()
 
-    resolve(pathInfo.uploadPath)
+    resolve(pathInfo.path)
   })
 }

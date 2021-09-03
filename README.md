@@ -19,7 +19,7 @@ PicGo SSH SCP 上传插件
 
 **关于配置文件**
 
-可以是本地文件，如 `C:/sshScpUploader.json`
+可以是本地文件，如 `D:/sshScpUploader.json`
 
 也可以是网络文件，如 `https://imba97.cn/sshScpUploader.json`
 
