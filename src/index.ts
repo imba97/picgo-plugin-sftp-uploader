@@ -14,7 +14,7 @@ export = (ctx: picgo) => {
     }
 
     // 获取配置
-    const configItem = await getPcigoConfig(userConfig)
+    const configItem = await getPcigoConfig(userConfig, ctx)
     const config = configItem[userConfig.site]
 
     const input = ctx.input

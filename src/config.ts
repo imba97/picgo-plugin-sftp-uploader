@@ -1,5 +1,6 @@
 import picgo from 'picgo'
 import http from 'http'
+import https from 'https'
 import fs from 'fs'
 
 export const config = (ctx: picgo) => {
@@ -35,13 +36,24 @@ export const config = (ctx: picgo) => {
 }
 
 export const getPcigoConfig = (
-  userConfig: IScpLoaderUserConfig
+  userConfig: IScpLoaderUserConfig,
+  ctx: picgo
 ): Promise<{ [key: string]: IScpLoaderUserConfigItem }> => {
   return new Promise((resolve, reject) => {
+    // 兼容 https
+    let request: typeof http | typeof https | null = null
+
+    if (/^https/.test(userConfig.configFile)) {
+      request = https
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    } else if (/^http/.test(userConfig.configFile)) {
+      request = http
+    }
+
     // 如果是网址 则用 http 否则是本地 用 fs
-    if (/^http/.test(userConfig.configFile)) {
+    if (request !== null) {
       // 网络
-      http
+      request
         .get(userConfig.configFile, (res) => {
           if (res.statusCode !== 200) {
             reject(res.statusCode)

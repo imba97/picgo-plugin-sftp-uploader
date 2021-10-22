@@ -26,7 +26,7 @@ export default async function upload(
     throw new Error("Can't find uploader config")
   }
 
-  const configItem = await getPcigoConfig(userConfig)
+  const configItem = await getPcigoConfig(userConfig, ctx)
   const config = configItem[userConfig.site]
 
   // 格式化路径
