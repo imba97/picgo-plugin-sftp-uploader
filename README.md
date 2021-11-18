@@ -1,6 +1,6 @@
-## picgo-plugin-ssh-scp-uploader
+## picgo-plugin-sftp-uploader
 
-PicGo SSH SCP 上传插件
+PicGo SFTP 上传插件，原 `picgo-plugin-ssh-scp-uploader`
 
 ## 配置
 
@@ -12,16 +12,16 @@ PicGo SSH SCP 上传插件
 
 ### 插件配置
 
-| 名称     | 介绍                 | 配置示例               |
-| -------- | -------------------- | ---------------------- |
-| 网站标识 | 多个 FTP 站的标识    | imba97                 |
-| 配置文件 | 配置文件的路径或 URL | D:/sshScpUploader.json |
+| 名称     | 介绍                 | 配置示例             |
+| -------- | -------------------- | -------------------- |
+| 网站标识 | 多个 SFTP 站的标识   | imba97               |
+| 配置文件 | 配置文件的路径或 URL | D:/sftpUploader.json |
 
 **关于配置文件**
 
-可以是本地文件，如 `D:/sshScpUploader.json`
+可以是本地文件，如 `D:/sftpUploader.json`
 
-也可以是网络文件，如 `https://imba97.cn/sshScpUploader.json`
+也可以是网络文件，如 `https://imba97.cn/sftpUploader.json`
 
 ### 配置文件配置
 
@@ -37,8 +37,9 @@ PicGo SSH SCP 上传插件
     "uploadPath": "/www/imba97_cn/uploads/{year}/{month}/{fullName}",
     "host": "1.2.3.4",
     "port": 22,
-    "usernameAndPrivateKey": "root|C:/Users/imba97/.ssh/id_rsa",
-    "password": "",
+    "username": "root",
+    "privateKey": "C:/Users/imba97/.ssh/id_rsa",
+    "passphrase": "private_key_password",
     "fileUser": "www",
     "dirMode": "0755"
   },
@@ -47,23 +48,25 @@ PicGo SSH SCP 上传插件
     "path": "/uploads/{year}/{month}/{fullName}",
     "uploadPath": "/www/btools_cc/uploads/{year}/{month}/{fullName}",
     "host": "1.2.3.4",
-    "usernameAndPrivateKey": "root",
-    "password": "password233"
+    "username": "root",
+    "password": "ssh_password"
   }
 }
 ```
 
-| key                   | 名称          | 介绍                                                                               | 配置示例                                            | 是否必填 |
-| --------------------- | ------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------- | -------- |
-| url                   | 域名地址      | 图片网站的域名                                                                     | https://imba97.cn                                   | 是       |
-| path                  | 网址路径      | 图片在网址中的路径                                                                 | /uploads/{year}/{month}/{fullName}                  | 是       |
-| uploadPath            | 文件路径      | 图片在服务器的真实路径                                                             | /www/wwwroot/blog/uploads/{year}/{month}/{fullName} | 是       |
-| host                  | SSH 地址      | 一般是服务器 IP                                                                    | 233.233.233.233                                     | 是       |
-| port                  | 端口          | 略                                                                                 | 22                                                  | 否       |
-| usernameAndPrivateKey | 用户名\|私钥  | 如果有私钥则填 用户名“竖线”私钥路径                                                | www                                                 | 是       |
-| password              | 密码/私钥密码 | 如果有私钥则填 私钥密码                                                            | password                                            | 否       |
-| fileUser              | 文件所属用户  | 文件的所属用户:用户组，如果跟上传用户不同可填写，用户名和用户组名相同时，可不写“:” | www                                                 | 否       |
-| dirMode               | 文件夹 mode   | 文件夹读写权限                                                                     | 0755                                                | 否       |
+| key        | 名称         | 介绍                                                                               | 配置示例                                            | 是否必填 |
+| ---------- | ------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------- | -------- |
+| url        | 域名地址     | 图片网站的域名                                                                     | https://imba97.cn                                   | 是       |
+| path       | 网址路径     | 图片在网址中的路径                                                                 | /uploads/{year}/{month}/{fullName}                  | 是       |
+| uploadPath | 文件路径     | 图片在服务器的真实路径                                                             | /www/wwwroot/blog/uploads/{year}/{month}/{fullName} | 是       |
+| host       | SSH 地址     | 一般是服务器 IP                                                                    | 233.233.233.233                                     | 是       |
+| port       | 端口         | 略                                                                                 | 22                                                  | 否       |
+| username   | 用户名       | SSH 登录用户                                                                       | www                                                 | 是       |
+| password   | 密码         | SSH 用户登录密码                                                                   | cGFzc3dvcmQ=                                        | 否       |
+| privateKey | 私钥         | SSH 连接私钥                                                                       | C:/Users/imba97/.ssh/id_rsa                         | 否       |
+| passphrase | 私钥密码     | SSH 连接私钥密码                                                                   | cGFzc3BocmFzZQ==                                    | 否       |
+| fileUser   | 文件所属用户 | 文件的所属用户:用户组，如果跟上传用户不同可填写，用户名和用户组名相同时，可不写“:” | www                                                 | 否       |
+| dirMode    | 文件夹 mode  | 文件夹读写权限                                                                     | 0755                                                | 否       |
 
 最终返回的地址是 **域名地址** + **网址路径**
 

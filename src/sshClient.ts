@@ -1,7 +1,7 @@
 import ssh2, { ConnectConfig } from 'ssh2'
 import fs from 'fs'
 import path from 'path'
-import { IScpLoaderUserConfigItem } from './config'
+import { ISftpLoaderUserConfigItem } from './config'
 
 export default class SSHClient {
   private static _instance: SSHClient
@@ -20,7 +20,7 @@ export default class SSHClient {
   /**
    * 用户配置
    */
-  private _userConfig: IScpLoaderUserConfigItem
+  private _userConfig: ISftpLoaderUserConfigItem
 
   /**
    * 类 单例
@@ -49,30 +49,22 @@ export default class SSHClient {
    * @param config 用户配置
    * @returns
    */
-  public init(config: IScpLoaderUserConfigItem): Promise<null> {
+  public init(config: ISftpLoaderUserConfigItem): Promise<null> {
     return new Promise((resolve, reject) => {
       SSHClient.instance._userConfig = config
 
-      const usernameAndPrivateKey = config.usernameAndPrivateKey.split('|')
-
-      const username = usernameAndPrivateKey[0]
-      const privateKey =
-        typeof usernameAndPrivateKey[1] !== 'undefined'
-          ? usernameAndPrivateKey[1]
-          : ''
-
       // 构造不同的登录信息
       const loginInfo: ConnectConfig =
-        privateKey !== ''
+        typeof config.privateKey !== 'undefined' && config.privateKey !== ''
           ? {
               // 有私钥
-              username: username,
-              privateKey: fs.readFileSync(privateKey),
-              passphrase: config.password
+              username: config.username,
+              privateKey: fs.readFileSync(config.privateKey),
+              passphrase: config.passphrase
             }
           : {
               // 无私钥
-              username: username,
+              username: config.username,
               password: config.password
             }
 

@@ -2,7 +2,7 @@ import { IImgInfo } from 'picgo/dist/src/types'
 
 import picgo from 'picgo'
 import { formatPath } from './util'
-import { getPcigoConfig, IScpLoaderUserConfig } from './config'
+import { getPcigoConfig, ISftpLoaderUserConfig } from './config'
 
 import SSHClient from './sshClient'
 
@@ -18,9 +18,7 @@ export default async function upload(
   output: IImgInfo,
   localPath: string
 ): Promise<string> {
-  let userConfig: IScpLoaderUserConfig = ctx.getConfig(
-    'picBed.ssh-scp-uploader'
-  )
+  let userConfig: ISftpLoaderUserConfig = ctx.getConfig('picBed.sftp-uploader')
 
   if (!userConfig) {
     throw new Error("Can't find uploader config")

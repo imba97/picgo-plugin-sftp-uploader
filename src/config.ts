@@ -3,9 +3,11 @@ import http from 'http'
 import https from 'https'
 import fs from 'fs'
 
+import env from './env'
+
 export const config = (ctx: picgo) => {
-  let userConfig = ctx.getConfig<IScpLoaderUserConfig>(
-    'picBed.ssh-scp-uploader'
+  let userConfig = ctx.getConfig<ISftpLoaderUserConfig>(
+    `picBed.${env.PLUGINS_ID}`
   )
 
   if (!userConfig) {
@@ -36,9 +38,9 @@ export const config = (ctx: picgo) => {
 }
 
 export const getPcigoConfig = (
-  userConfig: IScpLoaderUserConfig,
+  userConfig: ISftpLoaderUserConfig,
   ctx: picgo
-): Promise<{ [key: string]: IScpLoaderUserConfigItem }> => {
+): Promise<{ [key: string]: ISftpLoaderUserConfigItem }> => {
   return new Promise((resolve, reject) => {
     // 兼容 https
     let request: typeof http | typeof https | null = null
@@ -82,24 +84,26 @@ export const getPcigoConfig = (
   })
 }
 
-export interface IScpLoaderUserConfig {
+export interface ISftpLoaderUserConfig {
   site: string
   configFile: string
 }
 
-export interface IScpLoaderUserConfigItem extends Object {
+export interface ISftpLoaderUserConfigItem extends Object {
   url: string
   path: string
   uploadPath: string
   host: string
   port: number
-  usernameAndPrivateKey: string
+  username: string
   password?: string
+  privateKey?: string
+  passphrase?: string
   fileUser?: string
   dirMode?: string
 }
 
-export interface IScpLoaderPathInfo {
+export interface ISftpLoaderPathInfo {
   path: string
   uploadPath: string
 }

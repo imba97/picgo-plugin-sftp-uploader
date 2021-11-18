@@ -1,11 +1,11 @@
-import { IScpLoaderPathInfo } from './config'
+import { ISftpLoaderPathInfo } from './config'
 import { IImgInfo } from 'picgo/dist/src/types'
 import crypto from 'crypto'
 
 export const formatPath = (
   output: IImgInfo,
-  userConfig: IScpLoaderPathInfo
-): IScpLoaderPathInfo => {
+  userConfig: ISftpLoaderPathInfo
+): ISftpLoaderPathInfo => {
   // 获取日期
   let date = new Date()
 
@@ -39,12 +39,12 @@ export const formatPath = (
     ext: output.extname.replace('.', '')
   }
   // 未格式化路径
-  let pathInfo: IScpLoaderPathInfo = {
+  let pathInfo: ISftpLoaderPathInfo = {
     path: userConfig.path,
     uploadPath: userConfig.uploadPath
   }
   // 替换后的路径
-  let formatPath: IScpLoaderPathInfo = {
+  let formatPath: ISftpLoaderPathInfo = {
     path: '',
     uploadPath: ''
   }

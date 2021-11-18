@@ -1,12 +1,13 @@
 import picgo from 'picgo'
 
+import env from './env'
 import upload from './upload'
-import { config, getPcigoConfig, IScpLoaderUserConfig } from './config'
+import { config, getPcigoConfig, ISftpLoaderUserConfig } from './config'
 
 export = (ctx: picgo) => {
   const handle = async (ctx: picgo) => {
-    let userConfig: IScpLoaderUserConfig = ctx.getConfig(
-      'picBed.ssh-scp-uploader'
+    let userConfig: ISftpLoaderUserConfig = ctx.getConfig(
+      `picBed.${env.PLUGINS_ID}`
     )
 
     if (!userConfig) {
@@ -39,10 +40,10 @@ export = (ctx: picgo) => {
           output[i].imgUrl = imgUrl
         })
         .catch((err) => {
-          ctx.log.error('SSH SCP 发生错误，请检查用户名、私钥和密码是否正确')
+          ctx.log.error('SFTP 发生错误，请检查用户名、私钥和密码是否正确')
           ctx.log.error(err)
           ctx.emit('notification', {
-            title: 'SSH SCP 错误',
+            title: 'SFTP 错误',
             body: '请检查用户名、私钥、密码、权限是否正确',
             text: ''
           })
@@ -53,14 +54,14 @@ export = (ctx: picgo) => {
   }
 
   const register = () => {
-    ctx.helper.uploader.register('ssh-scp-uploader', {
+    ctx.helper.uploader.register(env.PLUGINS_ID, {
       handle,
       config,
-      name: 'SSH SCP 上传'
+      name: 'SFTP 上传'
     })
   }
   return {
-    uploader: 'ssh-scp-uploader',
+    uploader: env.PLUGINS_ID,
     register
   }
 }

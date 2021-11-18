@@ -11,8 +11,8 @@ import SSHClient from '../src/sshClient'
     uploadPath: '',
     host: '',
     port: 22,
-    usernameAndPrivateKey: '',
-    password: ''
+    username: '',
+    privateKey: ''
   })
 
   const local = 'tsconfig.json'

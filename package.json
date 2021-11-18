@@ -1,12 +1,12 @@
 {
-  "name": "picgo-plugin-ssh-scp-uploader",
-  "version": "1.2.2",
-  "description": "An uploader for uploadding via SSH SCP",
+  "name": "picgo-plugin-sftp-uploader",
+  "version": "1.3.0",
+  "description": "An uploader for uploadding via SFTP",
   "main": "dist/index.js",
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/imba97/picgo-plugin-ssh-scp-uploader",
+  "homepage": "https://github.com/imba97/picgo-plugin-sftp-uploader",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p .",
@@ -39,7 +39,6 @@
     "typescript": "^3.7.3"
   },
   "dependencies": {
-    "node-fetch": "^3.0.0",
     "ssh2": "^1.3.0"
   }
 }
