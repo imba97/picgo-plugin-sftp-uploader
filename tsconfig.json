@@ -1,14 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": false,
     "target": "es2017",
-    "declaration": true,
-    "outDir": "dist",
     // It's shit.
     // "baseUrl": "src",
     // "paths": {
@@ -21,7 +13,15 @@
       "es2017",
       "es2015",
       "es6"
-    ]
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "outDir": "dist",
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": [
     "./src/**/*"

@@ -1,28 +1,29 @@
-import picgo from 'picgo'
+import type { PicGo } from 'picgo'
 
+import type { ISftpLoaderUserConfig } from './config'
+import { config, getPcigoConfig } from './config'
 import env from './env'
 import upload from './upload'
-import { config, getPcigoConfig, ISftpLoaderUserConfig } from './config'
 
-export = (ctx: picgo) => {
-  const handle = async (ctx: picgo) => {
-    let userConfig: ISftpLoaderUserConfig = ctx.getConfig(
+export default function (ctx: PicGo): any {
+  const handle = async (ctx: PicGo): Promise<any> => {
+    const userConfig: ISftpLoaderUserConfig = ctx.getConfig(
       `picBed.${env.PLUGINS_ID}`
     )
 
     if (!userConfig) {
-      throw new Error("Can't find uploader config")
+      throw new Error('Can\'t find uploader config')
     }
 
     // 获取配置
-    const configItem = await getPcigoConfig(userConfig, ctx)
+    const configItem = await getPcigoConfig(userConfig)
     const config = configItem[userConfig.site]
 
     const input = ctx.input
     const output = ctx.output
 
     // 循环所有图片信息 上传
-    for (let i in input) {
+    for (const i in input) {
       const localPath = input[i]
 
       // 上传
@@ -60,6 +61,7 @@ export = (ctx: picgo) => {
       name: 'SFTP 上传'
     })
   }
+
   return {
     uploader: env.PLUGINS_ID,
     register

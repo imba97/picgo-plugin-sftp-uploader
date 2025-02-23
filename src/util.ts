@@ -1,16 +1,13 @@
-import { ISftpLoaderPathInfo } from './config'
-import { IImgInfo } from 'picgo/dist/src/types'
-import crypto from 'crypto'
+import type { IImgInfo } from 'picgo'
+import type { ISftpLoaderPathInfo } from './config'
+import crypto from 'node:crypto'
 
-export const formatPath = (
-  output: IImgInfo,
-  userConfig: ISftpLoaderPathInfo
-): ISftpLoaderPathInfo => {
+export function formatPath(output: IImgInfo, userConfig: ISftpLoaderPathInfo): ISftpLoaderPathInfo {
   // 获取日期
-  let date = new Date()
+  const date = new Date()
 
   // 格式化数据
-  let formatData = {
+  const formatData = {
     // 路径
     year: `${date.getFullYear()}`,
     month:
@@ -39,22 +36,23 @@ export const formatPath = (
     ext: output.extname.replace('.', '')
   }
   // 未格式化路径
-  let pathInfo: ISftpLoaderPathInfo = {
+  const pathInfo: ISftpLoaderPathInfo = {
     path: userConfig.path,
     uploadPath: userConfig.uploadPath
   }
   // 替换后的路径
-  let formatPath: ISftpLoaderPathInfo = {
+  const formatPath: ISftpLoaderPathInfo = {
     path: '',
     uploadPath: ''
   }
 
-  for (let key in pathInfo) {
+  for (const key in pathInfo) {
     // 匹配 {} 内容
     let out = 0
-    let reg = /(?:{(\w+)})/g
+    const reg = /\{(\w+)\}/g
     formatPath[key] = pathInfo[key]
     let result: RegExpExecArray
+    // eslint-disable-next-line no-cond-assign
     while ((result = reg.exec(pathInfo[key]))) {
       // 替换文本
       formatPath[key] = formatPath[key].replace(
@@ -64,7 +62,8 @@ export const formatPath = (
 
       // 避免死循环 一般没啥问题
       out++
-      if (out > 100) break
+      if (out > 100)
+        break
     }
   }
 

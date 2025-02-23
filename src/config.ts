@@ -1,11 +1,13 @@
-import picgo from 'picgo'
-import http from 'http'
-import https from 'https'
-import fs from 'fs'
+import type { PicGo } from 'picgo'
+
+import fs from 'node:fs'
+import http from 'node:http'
+import https from 'node:https'
+import process from 'node:process'
 
 import env from './env'
 
-export const config = (ctx: picgo) => {
+export function config(ctx: PicGo) {
   let userConfig = ctx.getConfig<ISftpLoaderUserConfig>(
     `picBed.${env.PLUGINS_ID}`
   )
@@ -37,18 +39,16 @@ export const config = (ctx: picgo) => {
   ]
 }
 
-export const getPcigoConfig = (
-  userConfig: ISftpLoaderUserConfig,
-  ctx: picgo
-): Promise<{ [key: string]: ISftpLoaderUserConfigItem }> => {
+export function getPcigoConfig(userConfig: ISftpLoaderUserConfig): Promise<Record<string, ISftpLoaderUserConfigItem>> {
   return new Promise((resolve, reject) => {
     // 兼容 https
     let request: typeof http | typeof https | null = null
 
-    if (/^https/.test(userConfig.configFile)) {
+    if (userConfig.configFile.startsWith('https')) {
       request = https
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    } else if (/^http/.test(userConfig.configFile)) {
+    }
+    else if (userConfig.configFile.startsWith('http')) {
       request = http
     }
 
@@ -77,7 +77,8 @@ export const getPcigoConfig = (
         .on('error', (e) => {
           reject(e.message)
         })
-    } else {
+    }
+    else {
       // 本地
       resolve(JSON.parse(fs.readFileSync(userConfig.configFile).toString()))
     }
@@ -89,7 +90,7 @@ export interface ISftpLoaderUserConfig {
   configFile: string
 }
 
-export interface ISftpLoaderUserConfigItem extends Object {
+export interface ISftpLoaderUserConfigItem {
   url: string
   path: string
   uploadPath: string
