@@ -19,7 +19,7 @@
     "picgo-gui-plugin",
     "picgo-plugin"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "publishConfig": {
     "access": "public"
   },
