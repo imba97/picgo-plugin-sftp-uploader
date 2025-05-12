@@ -1,12 +1,12 @@
 import type { Buffer } from 'node:buffer'
 import type { ConnectConfig } from 'ssh2'
-import type { ISftpLoaderUserConfigItem } from './config'
+import type { SFTPLoaderUserConfigItem } from './config'
 import fs from 'node:fs'
 import path from 'node:path'
 import ssh2 from 'ssh2'
 
-export default class SSHClient {
-  private static _instance: SSHClient
+export default class Client {
+  private static _instance: Client
   private static _client: ssh2.Client
 
   /**
@@ -22,14 +22,14 @@ export default class SSHClient {
   /**
    * 用户配置
    */
-  private _userConfig: ISftpLoaderUserConfigItem
+  private _userConfig: SFTPLoaderUserConfigItem
 
   /**
    * 类 单例
    */
-  public static get instance(): SSHClient {
+  public static get instance(): Client {
     if (!this._instance) {
-      this._instance = new SSHClient()
+      this._instance = new Client()
     }
 
     return this._instance
@@ -47,12 +47,11 @@ export default class SSHClient {
   }
 
   /**
-   * 初始化SSH
-   * @param config 用户配置
+   * 初始化 SSH
    */
-  public init(config: ISftpLoaderUserConfigItem): Promise<null> {
+  public init(config: SFTPLoaderUserConfigItem) {
     return new Promise((resolve, reject) => {
-      SSHClient.instance._userConfig = config
+      this._userConfig = config
 
       // 构造不同的登录信息
       const loginInfo: ConnectConfig
@@ -69,7 +68,7 @@ export default class SSHClient {
               password: config.password
             }
 
-      SSHClient.client
+      Client.client
         .on('ready', () => {
           // 连接成功
           this._isConnected = true
@@ -88,21 +87,25 @@ export default class SSHClient {
 
   /**
    * 上传逻辑
-   * @param local 本地路径
-   * @param remote 远程路径
-   * @returns null
    */
   public upload(local: string, remote: string): Promise<null> {
     if (!this._isConnected) {
       throw new Error('SSH 未连接')
     }
 
-    return new Promise(async (resolve) => {
-      const sftp = await this.sftp
+    return new Promise((resolve, reject) => {
+      const executeAsync = async () => {
+        try {
+          const sftp = await this.sftp
+          await this.mkdir(remote)
+          resolve(this.doUpload(sftp, local, remote))
+        }
+        catch (error) {
+          reject(error)
+        }
+      }
 
-      await this.mkdir(remote)
-
-      resolve(this.doUpload(sftp, local, remote))
+      executeAsync()
     })
   }
 
@@ -133,46 +136,50 @@ export default class SSHClient {
    * @param index 嵌套文件夹的 当前 index
    */
   private mkdir(dirPath: string | string[], index: number = 0): Promise<null> {
-    return new Promise(async (resolve) => {
-      const sftp = await this.sftp
+    return new Promise((resolve) => {
+      const executeAsync = async () => {
+        const sftp = await this.sftp
 
-      const dirs = !Array.isArray(dirPath)
-        ? path.dirname(dirPath).replace(/^\//, '').split('/')
-        : dirPath
+        const dirs = !Array.isArray(dirPath)
+          ? path.dirname(dirPath).replace(/^\//, '').split('/')
+          : dirPath
 
-      const fullPath = `${dirs
-        .map((p, _index) => (_index <= index ? `/${p}` : ''))
-        .join('')}`
+        const fullPath = `${dirs
+          .map((p, _index) => (_index <= index ? `/${p}` : ''))
+          .join('')}`
 
-      sftp.exists(fullPath, (isExists) => {
+        sftp.exists(fullPath, (isExists) => {
         // 没文件夹 创建
-        if (!isExists) {
-          sftp.mkdir(
-            fullPath,
-            {
-              mode: this._userConfig.dirMode || '0755'
-            },
-            () => {
+          if (!isExists) {
+            sftp.mkdir(
+              fullPath,
+              {
+                mode: this._userConfig.dirMode || '0755'
+              },
+              () => {
               // 下一级目录
-              if (index < dirs.length - 1) {
-                resolve(this.mkdir(dirs, index + 1))
+                if (index < dirs.length - 1) {
+                  resolve(this.mkdir(dirs, index + 1))
+                }
+                else {
+                  resolve(null)
+                }
               }
-              else {
-                resolve(null)
-              }
-            }
-          )
-        }
-        else {
-          // 下一级目录
-          if (index < dirs.length - 1) {
-            resolve(this.mkdir(dirs, index + 1))
+            )
           }
           else {
-            resolve(null)
+          // 下一级目录
+            if (index < dirs.length - 1) {
+              resolve(this.mkdir(dirs, index + 1))
+            }
+            else {
+              resolve(null)
+            }
           }
-        }
-      })
+        })
+      }
+
+      executeAsync()
     })
   }
 
@@ -220,7 +227,7 @@ export default class SSHClient {
   public close(): void {
     this._sftp.end()
     this._sftp = null
-    SSHClient.client.end()
+    Client.client.end()
   }
 
   /**
@@ -231,7 +238,7 @@ export default class SSHClient {
       return Promise.resolve(this._sftp)
 
     return new Promise((resolve, reject) => {
-      SSHClient.client.sftp((err, sftp) => {
+      Client.client.sftp((err, sftp) => {
         if (err)
           reject(err)
 
@@ -247,7 +254,7 @@ export default class SSHClient {
    */
   private exec(script: string): Promise<null> {
     return new Promise((resolve, reject) => {
-      SSHClient.client.exec(script, (err, stream) => {
+      Client.client.exec(script, (err, stream) => {
         if (err)
           reject(err)
 

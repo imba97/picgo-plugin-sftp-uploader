@@ -1,0 +1,7 @@
+onlyBuiltDependencies:
+  - cpu-features
+  - ejs
+  - esbuild
+  - simple-git-hooks
+  - ssh2
+  - unrs-resolver

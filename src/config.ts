@@ -1,15 +1,12 @@
 import type { PicGo } from 'picgo'
-
 import fs from 'node:fs'
-import http from 'node:http'
-import https from 'node:https'
-import process from 'node:process'
+import { request } from 'node:https'
 
-import env from './env'
+import { PLUGINS_ID } from './constants'
 
 export function config(ctx: PicGo) {
-  let userConfig = ctx.getConfig<ISftpLoaderUserConfig>(
-    `picBed.${env.PLUGINS_ID}`
+  let userConfig = ctx.getConfig<SFTPLoaderUserConfig>(
+    `picBed.${PLUGINS_ID}`
   )
 
   if (!userConfig) {
@@ -39,24 +36,21 @@ export function config(ctx: PicGo) {
   ]
 }
 
-export function getPcigoConfig(userConfig: ISftpLoaderUserConfig): Promise<Record<string, ISftpLoaderUserConfigItem>> {
+export function getPcigoConfig(userConfig: SFTPLoaderUserConfig): Promise<Record<string, SFTPLoaderUserConfigItem>> {
   return new Promise((resolve, reject) => {
-    // 兼容 https
-    let request: typeof http | typeof https | null = null
-
-    if (userConfig.configFile.startsWith('https')) {
-      request = https
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    }
-    else if (userConfig.configFile.startsWith('http')) {
-      request = http
-    }
-
-    // 如果是网址 则用 http 否则是本地 用 fs
-    if (request !== null) {
-      // 网络
-      request
-        .get(userConfig.configFile, (res) => {
+    // 判断是否是网络请求
+    if (userConfig.configFile.startsWith('http')) {
+      // 使用统一的请求方法
+      const url = new URL(userConfig.configFile)
+      const req = request(
+        {
+          hostname: url.hostname,
+          path: url.pathname + url.search,
+          port: url.port || (url.protocol === 'https:' ? 443 : 80),
+          method: 'GET',
+          protocol: url.protocol
+        },
+        (res) => {
           if (res.statusCode !== 200) {
             reject(res.statusCode)
             res.resume()
@@ -64,19 +58,20 @@ export function getPcigoConfig(userConfig: ISftpLoaderUserConfig): Promise<Recor
           }
 
           res.setEncoding('utf8')
-
           let body = ''
           res.on('data', (chunk) => {
             body += chunk
           })
           res.on('end', () => {
-            res.resume()
             resolve(JSON.parse(body))
           })
-        })
-        .on('error', (e) => {
-          reject(e.message)
-        })
+        }
+      )
+
+      req.on('error', (e) => {
+        reject(e.message)
+      })
+      req.end()
     }
     else {
       // 本地
@@ -85,12 +80,12 @@ export function getPcigoConfig(userConfig: ISftpLoaderUserConfig): Promise<Recor
   })
 }
 
-export interface ISftpLoaderUserConfig {
+export interface SFTPLoaderUserConfig {
   site: string
   configFile: string
 }
 
-export interface ISftpLoaderUserConfigItem {
+export interface SFTPLoaderUserConfigItem {
   url: string
   path: string
   uploadPath: string
@@ -104,7 +99,7 @@ export interface ISftpLoaderUserConfigItem {
   dirMode?: string
 }
 
-export interface ISftpLoaderPathInfo {
+export interface SFTPLoaderPathInfo {
   path: string
   uploadPath: string
 }

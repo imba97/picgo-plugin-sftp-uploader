@@ -5,6 +5,7 @@ export default defineBuildConfig({
     'src/index'
   ],
   rollup: {
+    emitCJS: true,
     inlineDependencies: true,
     json: {
       compact: true,
@@ -14,8 +15,16 @@ export default defineBuildConfig({
     commonjs: {
       requireReturnsDefault: 'auto'
     },
+    esbuild: {
+      format: 'cjs',
+      minify: true
+    },
     dts: {
       respectExternal: false
+    },
+    output: {
+      format: 'cjs',
+      exports: 'auto'
     }
   },
   clean: true,
