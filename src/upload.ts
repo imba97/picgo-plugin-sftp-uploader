@@ -1,51 +1,64 @@
+import type { Buffer } from 'node:buffer'
 import type { IImgInfo, IPicGo } from 'picgo'
-import type { SFTPLoaderUserConfig } from './config'
-import Client from './client'
-import { getPcigoConfig } from './config'
-
+import type Client from './client'
+import type { SFTPLoaderPathInfo, SFTPLoaderUserConfigItem } from './config'
+import fs from 'node:fs'
 import { formatPath } from './util'
 
-export async function upload(
+export function useUploader(
   ctx: IPicGo,
-  output: IImgInfo,
-  localPath: string
-): Promise<string> {
-  const userConfig: SFTPLoaderUserConfig = ctx.getConfig('picBed.sftp-uploader')
-
-  if (!userConfig) {
-    throw new Error('Can\'t find uploader config')
-  }
-
-  const configItem = await getPcigoConfig(userConfig)
-  const config = configItem[userConfig.site]
-
-  // 格式化路径
-  const pathInfo = formatPath(output, config)
-
-  return new Promise((resolve, reject) => {
-    const executeAsync = async () => {
+  client: typeof Client.instance,
+  config: SFTPLoaderUserConfigItem
+) {
+  // 公共上传逻辑
+  const doUpload = async (
+    fileOrBuffer: string | Buffer,
+    pathInfo: SFTPLoaderPathInfo
+  ) => {
+    let uploadPath = fileOrBuffer
+    let tmpFile: string | undefined
+    if (typeof fileOrBuffer !== 'string') {
+      tmpFile = await bufferToTempFile(fileOrBuffer)
+      uploadPath = tmpFile
+    }
+    await client.upload(uploadPath as string, pathInfo.uploadPath)
+    if (tmpFile) {
       try {
-        // 连接
-        await Client.instance.init(config)
-
-        // 上传
-        await Client.instance.upload(localPath, pathInfo.uploadPath)
-
-        // 修改用户、用户组
-        if (config.fileUser) {
-          await Client.instance.chown(pathInfo.uploadPath, config.fileUser)
-        }
-
-        // 关闭
-        Client.instance.close()
-
-        resolve(pathInfo.path)
+        fs.unlinkSync(tmpFile)
       }
-      catch (err) {
-        reject(err)
+      catch (e) {
+        ctx.log?.warn?.('临时文件删除失败: %o', e)
       }
     }
+    if (config.fileUser) {
+      await client.chown(pathInfo.uploadPath, config.fileUser)
+    }
+    return pathInfo.path
+  }
 
-    executeAsync()
-  })
+  // 处理本地路径上传
+  const upload = async (localPath: string, idx: number, output: IImgInfo[]) => {
+    const pathInfo = formatPath(output[idx], config)
+    return doUpload(localPath, pathInfo)
+  }
+
+  // 处理 Buffer 上传
+  const uploadBuffer = async (buffer: Buffer, idx: number, output: IImgInfo[]) => {
+    const pathInfo = formatPath(output[idx], config)
+    return doUpload(buffer, pathInfo)
+  }
+
+  // Buffer 转临时文件
+  async function bufferToTempFile(buffer: Buffer): Promise<string> {
+    // 只在必须时用临时文件
+    const tmpDir = fs.mkdtempSync('picgo-sftp-')
+    const tmpFile = `${tmpDir}/${Date.now()}`
+    fs.writeFileSync(tmpFile, buffer)
+    return tmpFile
+  }
+
+  return {
+    upload,
+    uploadBuffer
+  }
 }

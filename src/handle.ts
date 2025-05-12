@@ -1,8 +1,9 @@
 import type { IPicGo } from 'picgo'
 import type { SFTPLoaderUserConfig } from './config'
+import Client from './client'
 import { getPcigoConfig } from './config'
 import { PLUGINS_ID } from './constants'
-import { upload } from './upload'
+import { useUploader } from './upload'
 
 export async function handle(ctx: IPicGo): Promise<any> {
   const userConfig: SFTPLoaderUserConfig = ctx.getConfig(
@@ -20,12 +21,21 @@ export async function handle(ctx: IPicGo): Promise<any> {
   const input = ctx.input
   const output = ctx.output
 
-  // 循环所有图片信息 上传
-  for (const i in input) {
-    const localPath = input[i]
+  // 初始化 SFTP 客户端
+  const client = Client.instance
+  await client.init(config)
+  const { upload, uploadBuffer } = useUploader(ctx, client, config)
 
-    // 上传
-    await upload(ctx, output[i], localPath)
+  // 循环所有图片信息 上传
+  for (let i = 0; i < input.length; i++) {
+    const localPath = input[i]
+    const buffer = output[i].buffer
+
+    const uploadPromise = buffer
+      ? uploadBuffer(buffer, i, output)
+      : upload(localPath, i, output)
+
+    await uploadPromise
       .then((path) => {
         const imgUrl = `${
           /\/$/.test(config.url)
@@ -46,6 +56,9 @@ export async function handle(ctx: IPicGo): Promise<any> {
         })
       })
   }
+
+  // 关闭连接
+  client.close()
 
   return ctx
 }
