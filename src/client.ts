@@ -12,7 +12,7 @@ export default class Client {
   /**
    * SFTP 实例
    */
-  private _sftp: ssh2.SFTPWrapper
+  private _sftp: ssh2.SFTPWrapper | null = null
 
   /**
    * 是否连接
@@ -225,8 +225,9 @@ export default class Client {
    * 关闭
    */
   public close(): void {
-    this._sftp.end()
+    this._sftp?.end()
     this._sftp = null
+    this._isConnected = false
     Client.client.end()
   }
 
@@ -239,8 +240,10 @@ export default class Client {
 
     return new Promise((resolve, reject) => {
       Client.client.sftp((err, sftp) => {
-        if (err)
+        if (err) {
           reject(err)
+          return
+        }
 
         this._sftp = sftp
         resolve(sftp)

@@ -3,6 +3,8 @@ import type { IImgInfo, IPicGo } from 'picgo'
 import type Client from './client'
 import type { SFTPLoaderPathInfo, SFTPLoaderUserConfigItem } from './config'
 import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { formatPath } from './util'
 
 export function useUploader(
@@ -51,8 +53,8 @@ export function useUploader(
   // Buffer 转临时文件
   async function bufferToTempFile(buffer: Buffer): Promise<string> {
     // 只在必须时用临时文件
-    const tmpDir = fs.mkdtempSync('picgo-sftp-')
-    const tmpFile = `${tmpDir}/${Date.now()}`
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'picgo-sftp-'))
+    const tmpFile = path.join(tmpDir, `${Date.now()}`)
     fs.writeFileSync(tmpFile, buffer)
     return tmpFile
   }
