@@ -40,16 +40,16 @@
     "@types/ssh2": "^1.15.5",
     "bumpp": "^10.1.0",
     "eslint": "^9.26.0",
-    "lint-staged": "^16.0.0",
+    "nano-staged": "^1.0.2",
     "picgo": "^1.5.8",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.3",
     "unbuild": "^3.5.0"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "pnpm nano-staged"
   },
-  "lint-staged": {
+  "nano-staged": {
     "*": "eslint --cache --fix"
   }
 }
