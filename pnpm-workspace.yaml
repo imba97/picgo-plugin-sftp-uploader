@@ -2,6 +2,9 @@ shellEmulator: true
 
 trustPolicy: no-downgrade
 
+overrides:
+  cross-spawn@6.0.6: 7.0.6
+
 onlyBuiltDependencies:
   - cpu-features
   - ejs
