@@ -35,11 +35,11 @@
     "ssh2": "^1.16.0"
   },
   "devDependencies": {
-    "@imba97/eslint-config": "^0.0.6",
+    "@antfu/eslint-config": "^8.2.0",
     "@types/node": "^22.15.17",
     "@types/ssh2": "^1.15.5",
     "bumpp": "^10.1.0",
-    "eslint": "^9.26.0",
+    "eslint": "^10.3.0",
     "nano-staged": "^1.0.2",
     "picgo": "^1.5.8",
     "simple-git-hooks": "^2.13.0",
